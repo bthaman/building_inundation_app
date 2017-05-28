@@ -40,7 +40,7 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
 
     def envclick(self):
         """ Click event for 'Get Building Workspace' button """
-        # if the buildings can be in a file gdb, this code needs to change to accommodate that
+        # if the buildings are in a file gdb, this code needs to change to accommodate that
         self.building_workspace = fdd.get_directory(title='Select workspace')
         if not self.building_workspace:
             return
@@ -59,6 +59,7 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
             return
         self.lst_fc_trianglews = []
         env.workspace = self.triangle_workspace
+        # check if file geodatabase
         if '.' in self.triangle_workspace and self.triangle_workspace.rsplit('.')[-1] == 'gdb':
             datasets = arcpy.ListDatasets('*', 'Feature')
             datasets = [''] + datasets if datasets is not None else []
@@ -102,7 +103,7 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
         except Exception as e:
             msgbox.show_error('Buffer Error', str(e))
             return
-        # do geoprocessing for all storms
+        # geoprocessing for all storms
         for n, triangle in enumerate(self.triangles_all_storms):
             triangle_fc = self.dict_triangle_fc[triangle]
             print('Executing: ' + triangle_fc)
@@ -140,9 +141,9 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
             # join max WSEL and max depth to buildings
             try:
                 building_id_field = 'poly_id'
-                included_fields = ['MAX_DEPTH2', 'MAX_elevat']
+                join_fields = ['MAX_DEPTH2', 'MAX_elevat']
                 arcpy.JoinField_management(building_features, building_id_field,
-                                           dissolve_features, building_id_field, included_fields)
+                                           dissolve_features, building_id_field, join_fields)
             except Exception as e:
                 msgbox.show_error('JoinField error', str(e))
                 return
@@ -173,7 +174,6 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
                 return
             finally:
                 pass
-
         # delete in_memory building buffer and display message
         arcpy.Delete_management(buff_features)
         msgbox.show_message('Message', 'Completed successfully.')
