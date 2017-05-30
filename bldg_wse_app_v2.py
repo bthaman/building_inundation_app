@@ -103,7 +103,7 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
         except Exception as e:
             msgbox.show_error('Buffer Error', str(e))
             return
-        # geoprocessing for all storms
+        # do geoprocessing for all storms
         for n, triangle in enumerate(self.triangles_all_storms):
             triangle_fc = self.dict_triangle_fc[triangle]
             print('Executing: ' + triangle_fc)
@@ -141,15 +141,15 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
             # join max WSEL and max depth to buildings
             try:
                 building_id_field = 'poly_id'
-                join_fields = ['MAX_DEPTH2', 'MAX_elevat']
+                included_fields = ['MAX_DEPTH2', 'MAX_elevat']
                 arcpy.JoinField_management(building_features, building_id_field,
-                                           dissolve_features, building_id_field, join_fields)
+                                           dissolve_features, building_id_field, included_fields)
             except Exception as e:
                 msgbox.show_error('JoinField error', str(e))
                 return
             finally:
                 arcpy.Delete_management(dissolve_features)
-            #  add WSELn and Depth2Dn fields
+            # add WSELn and Depth2Dn fields
             try:
                 arcpy.AddField_management(building_features, 'WSEL_' + str(n), 'FLOAT', "", "", "", "",
                                           "NULLABLE", "NON_REQUIRED", "")
@@ -174,6 +174,7 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
                 return
             finally:
                 pass
+
         # delete in_memory building buffer and display message
         arcpy.Delete_management(buff_features)
         msgbox.show_message('Message', 'Completed successfully.')
