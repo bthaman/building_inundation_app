@@ -149,7 +149,7 @@ class App(basic_combo_dialog_v2.BasicComboGUI):
                 return
             finally:
                 arcpy.Delete_management(dissolve_features)
-            # add WSELn and Depth2Dn fields
+            # add WSELn and Depth2Dn fields.
             try:
                 arcpy.AddField_management(building_features, 'WSEL_' + str(n), 'FLOAT', "", "", "", "",
                                           "NULLABLE", "NON_REQUIRED", "")
